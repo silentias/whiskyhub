@@ -1,7 +1,7 @@
 from pathlib import Path
 
 class Config:
-    DEFAULT_ASSISTANT_NAME = "Робот"
+    DEFAULT_ASSISTANT_NAME = "Виски"
 
     SETTINGS_PATH = (
         Path(__file__).parent
