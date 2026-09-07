@@ -134,6 +134,65 @@ class BaseActions:
 
         return result
 
+    def lockComputer(self) -> bool:
+        return self._execute(
+            self._platform_actions.lockComputer,
+            "Заблокировала компьютер",
+            "Не удалось заблокировать компьютер",
+        )
+
+    def takeScreenshot(self) -> bool:
+        return self._execute(
+            self._platform_actions.takeScreenshot,
+            "Сделала скриншот",
+            "Не удалось сделать скриншот",
+        )
+
+    def setVolume(self, level: int | str) -> bool:
+        try:
+            normalized_level = int(level)
+        except (TypeError, ValueError):
+            self._speak("Укажите громкость числом от нуля до ста")
+            return False
+
+        if not 0 <= normalized_level <= 100:
+            self._speak("Громкость должна быть от нуля до ста")
+            return False
+
+        return self._execute(
+            lambda: self._platform_actions.setVolume(normalized_level),
+            f"Установила громкость на {normalized_level} процентов",
+            "Не удалось установить громкость",
+        )
+
+    def muteSound(self) -> bool:
+        return self._execute(
+            self._platform_actions.muteSound,
+            "Выключила звук",
+            "Не удалось выключить звук",
+        )
+
+    def unmuteSound(self) -> bool:
+        return self._execute(
+            self._platform_actions.unmuteSound,
+            "Включила звук",
+            "Не удалось включить звук",
+        )
+
+    def increaseVolume(self) -> bool:
+        return self._execute(
+            self._platform_actions.increaseVolume,
+            "Сделала громче",
+            "Не удалось увеличить громкость",
+        )
+
+    def decreaseVolume(self) -> bool:
+        return self._execute(
+            self._platform_actions.decreaseVolume,
+            "Сделала тише",
+            "Не удалось уменьшить громкость",
+        )
+
     def getCurrentDateTime(self):
         now = datetime.now()
         weekdays = (
