@@ -111,3 +111,53 @@ commands:
     slug: cancel_action
     voice_phrases: ["отмена", "отмени", "нет"]
     requires_confirmation: false
+
+  - id: 16
+    slug: lock_computer
+    voice_phrases: ["заблокируй компьютер", "заблокируй экран"]
+    action_group: base_actions
+    action_method: lockComputer
+    requires_confirmation: false
+
+  - id: 17
+    slug: take_screenshot
+    voice_phrases: ["сделай скриншот", "сфотографируй экран"]
+    action_group: base_actions
+    action_method: takeScreenshot
+    requires_confirmation: false
+
+  - id: 18
+    slug: set_volume
+    voice_patterns:
+      - '^(?:установи громкость на|громкость)\s+(?P<level>\d{1,3})(?:\s+процент(?:а|ов)?)?$'
+    action_group: base_actions
+    action_method: setVolume
+    requires_confirmation: false
+
+  - id: 19
+    slug: mute_sound
+    voice_phrases: ["выключи звук"]
+    action_group: base_actions
+    action_method: muteSound
+    requires_confirmation: false
+
+  - id: 20
+    slug: unmute_sound
+    voice_phrases: ["включи звук"]
+    action_group: base_actions
+    action_method: unmuteSound
+    requires_confirmation: false
+
+  - id: 21
+    slug: increase_volume
+    voice_phrases: ["сделай громче", "увеличь громкость"]
+    action_group: base_actions
+    action_method: increaseVolume
+    requires_confirmation: false
+
+  - id: 22
+    slug: decrease_volume
+    voice_phrases: ["сделай тише", "уменьши громкость"]
+    action_group: base_actions
+    action_method: decreaseVolume
+    requires_confirmation: false
