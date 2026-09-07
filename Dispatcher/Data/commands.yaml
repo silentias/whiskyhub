@@ -1,0 +1,113 @@
+commands:
+  - id: 1
+    slug: open_browser
+    voice_phrases: ["открой браузер"]
+    action_group: base_actions
+    action_method: openBrowser
+    requires_confirmation: false
+
+  - id: 2
+    slug: open_calculator
+    voice_phrases: ["открой калькулятор"]
+    action_group: base_actions
+    action_method: openCalculator
+    requires_confirmation: false
+
+  - id: 3
+    slug: open_notepad
+    voice_phrases: ["открой блокнот"]
+    action_group: base_actions
+    action_method: openNotepad
+    requires_confirmation: false
+
+  - id: 4
+    slug: open_file_manager
+    voice_phrases: ["открой проводник"]
+    action_group: base_actions
+    action_method: openFileManager
+    requires_confirmation: false
+
+  - id: 5
+    slug: open_terminal
+    voice_phrases: ["открой терминал"]
+    action_group: base_actions
+    action_method: openTerminal
+    requires_confirmation: false
+
+  - id: 6
+    slug: open_calendar
+    voice_phrases: ["открой календарь"]
+    action_group: base_actions
+    action_method: openCalendar
+    requires_confirmation: false
+
+  - id: 7
+    slug: get_current_datetime
+    voice_phrases:
+      - "сообщи время и дату"
+      - "скажи время и дату"
+      - "который час"
+      - "какое сегодня число"
+    action_group: base_actions
+    action_method: sayCurrentDateTime
+    requires_confirmation: false
+
+  - id: 8
+    slug: shutdown_computer
+    voice_phrases:
+      - "выключи компьютер"
+      - "заверши работу компьютера"
+    action_group: base_actions
+    action_method: shutdownComputer
+    requires_confirmation: true
+    confirmation_message: "Подтвердите выключение компьютера"
+
+  - id: 9
+    slug: restart_computer
+    voice_phrases:
+      - "перезагрузи компьютер"
+      - "перезагрузи пк"
+    action_group: base_actions
+    action_method: restartComputer
+    requires_confirmation: true
+    confirmation_message: "Подтвердите перезагрузку компьютера"
+
+  - id: 10
+    slug: empty_trash
+    voice_phrases: ["очисти корзину"]
+    action_group: base_actions
+    action_method: emptyTrash
+    requires_confirmation: true
+    confirmation_message: "Подтвердите очистку корзины"
+
+  - id: 11
+    slug: open_task_manager
+    voice_phrases: ["открой диспетчер задач"]
+    action_group: base_actions
+    action_method: openTaskManager
+    requires_confirmation: false
+
+  - id: 12
+    slug: open_settings
+    voice_phrases: ["открой настройки"]
+    action_group: base_actions
+    action_method: openSettings
+    requires_confirmation: false
+
+  - id: 13
+    slug: change_assistant_name
+    voice_patterns:
+      - '^(?:смени имя на|называйся|теперь тебя зовут)\s+(?P<name>[а-яёa-z-]+(?:\s+[а-яёa-z-]+)*)$'
+    action_group: inner_actions
+    action_method: changeAssistantName
+    requires_confirmation: false
+
+  - id: 14
+    slug: confirm_action
+    voice_phrases: ["подтверждаю", "подтвердить", "да"]
+    requires_confirmation: false
+
+  - id: 15
+    slug: cancel_action
+    voice_phrases: ["отмена", "отмени", "нет"]
+    requires_confirmation: false
