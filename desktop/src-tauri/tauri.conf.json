@@ -1,0 +1,45 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "WhiskyHub",
+  "version": "0.0.3",
+  "identifier": "com.desktop.whiskyhub",
+  "build": {
+    "beforeDevCommand": "pnpm dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "pnpm build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "WhiskyHub",
+        "width": 500,
+        "height": 700,
+        "minWidth": 500,
+        "minHeight": 700,
+        "maxWidth": 500,
+        "maxHeight": 700,
+        "resizable": false,
+        "maximizable": false
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis"],
+    "externalBin": [
+      "binaries/whiskyhub-engine"
+    ],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
+  }
+}
