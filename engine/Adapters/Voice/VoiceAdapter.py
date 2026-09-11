@@ -1,9 +1,12 @@
+import logging
 from typing import Callable
 
 from Adapters.Voice.VoiceCommandParser import VoiceCommandParser
 from Adapters.Voice.VoiceCommandRouter import VoiceCommandRouter, VoiceRouteType
 from Contracts.CommandRequest import CommandRequest
 from Adapters.Voice.VoiceListener import VoiceListener
+
+logger = logging.getLogger(__name__)
 
 
 class VoiceAdapter:
@@ -27,21 +30,21 @@ class VoiceAdapter:
             if not raw_text:
                 continue
 
-            print(f"[VOICE] {raw_text}")
+            logger.info("Распознано: %s", raw_text)
             route = self._router.route(raw_text)
 
             if route.route_type is VoiceRouteType.IGNORED:
                 continue
 
             if route.route_type is VoiceRouteType.ACTIVATED:
-                print("[VOICE] Помощник активирован. Слушаю команду")
+                logger.info("Помощник активирован. Слушаю команду")
                 continue
 
             request = self._parser.parse(
                 route.command_text,
                 respond_with_voice=self._respond_with_voice,
             )
-            print(f"[VOICE] Команда преобразована в контракт: {request.slug}")
+            logger.info("Команда преобразована в контракт: %s", request.slug)
             return request
 
     def complete_session(self, keep_active: bool = False) -> None:

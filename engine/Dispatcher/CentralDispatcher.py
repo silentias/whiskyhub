@@ -1,3 +1,4 @@
+import logging
 from threading import RLock
 
 from Core.Actions.BaseActions import BaseActions
@@ -7,6 +8,8 @@ from Contracts.CommandResult import CommandResult
 from Dispatcher.CommandCatalog import CommandCatalog
 from Dispatcher.CommandDefinition import CommandDefinition
 from Core.InnerActions.AssistantActions import AssistantActions
+
+logger = logging.getLogger(__name__)
 
 
 class CentralDispatcher:
@@ -35,8 +38,21 @@ class CentralDispatcher:
         with self._dispatch_lock:
             return self._dispatch(request)
 
+    def list_commands(self) -> list[dict]:
+        """Return a public, read-only representation of available commands."""
+        return [
+            {
+                "id": definition.id,
+                "slug": definition.slug,
+                "voice_phrases": list(definition.voice_phrases),
+                "voice_patterns": list(definition.voice_patterns),
+                "requires_confirmation": definition.requires_confirmation,
+            }
+            for definition in self._command_catalog.commands
+        ]
+
     def _dispatch(self, request: CommandRequest) -> CommandResult:
-        print(f"[DISPATCHER] Получена команда: {request.slug}")
+        logger.info("Получена команда: %s; source=%s", request.slug, request.source)
 
         if request.slug == "confirm_action":
             return self._confirm_pending(request)
@@ -64,7 +80,7 @@ class CentralDispatcher:
             self._pending_request = request
             self._runtime.pending_action = request.slug
             self._respond(request, definition.confirmation_message)
-            print(f"[DISPATCHER] Ожидается подтверждение: {request.slug}")
+            logger.info("Ожидается подтверждение: %s", request.slug)
             return CommandResult(
                 success=True,
                 status="confirmation_required",
@@ -99,7 +115,7 @@ class CentralDispatcher:
         self._clear_pending()
         message = "Команда отменена"
         self._respond(cancellation, message)
-        print("[DISPATCHER] Ожидающая команда отменена")
+        logger.info("Ожидающая команда отменена")
         return CommandResult(True, "cancelled", message)
 
     def _execute(
@@ -112,17 +128,17 @@ class CentralDispatcher:
             success = bool(handler(**request.arguments))
         except (TypeError, ValueError) as error:
             message = f"Некорректные аргументы команды: {error}"
-            print(f"[DISPATCHER] {message}")
+            logger.warning("%s", message)
             self._respond(request, "Не удалось выполнить команду")
             return CommandResult(False, "invalid_arguments", message)
         except Exception as error:
             message = f"Ошибка выполнения команды: {error}"
-            print(f"[DISPATCHER] {message}")
+            logger.exception("%s", message)
             self._respond(request, "Не удалось выполнить команду")
             return CommandResult(False, "execution_error", message)
 
         status = "completed" if success else "failed"
-        print(f"[DISPATCHER] Результат команды {request.slug}: {status}")
+        logger.info("Результат команды %s: %s", request.slug, status)
         return CommandResult(success, status)
 
     def _respond(self, request: CommandRequest, message: str) -> None:

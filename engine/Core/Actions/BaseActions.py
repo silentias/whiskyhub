@@ -1,4 +1,5 @@
 import platform
+import logging
 from datetime import datetime
 from urllib.parse import quote_plus
 
@@ -6,6 +7,8 @@ from App.RunTime import RunTime
 from Core.Actions.LinuxActions import LinuxActions
 from Core.Actions.MacActions import MacActions
 from Core.Actions.WindowsActions import WindowsActions
+
+logger = logging.getLogger(__name__)
 
 
 class BaseActions:
@@ -26,7 +29,7 @@ class BaseActions:
         self._platform_actions = actions_class()
         self._speech = speech
         self._runtime = runtime or RunTime()
-        print(f"[ACTION] Определена операционная система: {self.os_type}")
+        logger.info("Определена операционная система: %s", self.os_type)
 
     def toggleMicrophone(self, value: str | bool) -> bool:
         """Enable or disable microphone capture for the voice adapter."""
@@ -42,18 +45,18 @@ class BaseActions:
             elif normalized in disabled_values:
                 enabled = False
             else:
-                print(f"[ACTION] Неизвестное состояние микрофона: {value}")
+                logger.warning("Неизвестное состояние микрофона: %s", value)
                 return False
         else:
-            print("[ACTION] Состояние микрофона должно быть строкой или bool")
+            logger.warning("Состояние микрофона должно быть строкой или bool")
             return False
 
         if enabled:
             self._runtime.microphone_enabled.set()
-            print("[ACTION] Микрофон включён")
+            logger.info("Микрофон включён")
         else:
             self._runtime.microphone_enabled.clear()
-            print("[ACTION] Микрофон выключен")
+            logger.info("Микрофон выключен")
 
         return True
 
@@ -65,7 +68,7 @@ class BaseActions:
             self._speech.speak(text)
             return True
         except Exception as error:
-            print(f"[TTS] Не удалось озвучить сообщение: {error}")
+            logger.exception("Не удалось озвучить сообщение: %s", error)
             return False
 
     def _execute(self, action, success_message: str, error_message: str) -> bool:
@@ -78,7 +81,7 @@ class BaseActions:
             self._speak(success_message)
             return True
         except (FileNotFoundError, OSError) as error:
-            print(f"[ACTION] {error_message}: {error}")
+            logger.exception("%s: %s", error_message, error)
             self._speak(error_message)
             return False
 

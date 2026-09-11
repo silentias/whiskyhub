@@ -42,6 +42,7 @@ class Config:
         USER_DATA_ROOT
         / "assistant.db"
     )
+    LOG_PATH = USER_DATA_ROOT / "engine.log"
     MODEL_PATH = (
         ENGINE_ROOT
         / "models"

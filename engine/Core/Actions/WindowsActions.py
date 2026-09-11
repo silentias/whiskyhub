@@ -1,10 +1,13 @@
 import webbrowser
+import logging
 import ctypes
 import os
 import shutil
 import subprocess
 from datetime import datetime
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
 
 
 class WindowsActions:
@@ -14,14 +17,14 @@ class WindowsActions:
             subprocess.Popen(command)
             return True
         except OSError as error:
-            print(f"[WINDOWS] Не удалось запустить {command[0]}: {error}")
+            logger.exception("Не удалось запустить %s: %s", command[0], error)
             return False
 
     def openBrowser(self, url="https://www.google.com") -> bool:
         try:
             return bool(webbrowser.open(url))
         except webbrowser.Error as error:
-            print(f"[WINDOWS] Не удалось открыть браузер: {error}")
+            logger.exception("Не удалось открыть браузер: %s", error)
             return False
 
     def openCalculator(self) -> bool:
@@ -41,7 +44,7 @@ class WindowsActions:
             if terminal_path:
                 return self._start_process([terminal_path])
 
-        print("[WINDOWS] В системе не найден терминал")
+        logger.warning("В системе не найден терминал")
         return False
 
     def openCalendar(self) -> bool:
@@ -49,7 +52,7 @@ class WindowsActions:
             os.startfile("outlookcal:")
             return True
         except OSError as error:
-            print(f"[WINDOWS] Системный календарь недоступен: {error}")
+            logger.warning("Системный календарь недоступен: %s", error)
             return self.openBrowser("https://calendar.google.com")
 
     def openTaskManager(self) -> bool:
@@ -60,7 +63,7 @@ class WindowsActions:
             os.startfile("ms-settings:")
             return True
         except OSError as error:
-            print(f"[WINDOWS] Не удалось открыть настройки: {error}")
+            logger.exception("Не удалось открыть настройки: %s", error)
             return False
 
     def emptyTrash(self) -> bool:
@@ -76,13 +79,13 @@ class WindowsActions:
             )
             return result == 0
         except OSError as error:
-            print(f"[WINDOWS] Не удалось очистить корзину: {error}")
+            logger.exception("Не удалось очистить корзину: %s", error)
             return False
 
     def shutdownComputer(self) -> bool:
         shutdown_path = shutil.which("shutdown.exe")
         if not shutdown_path:
-            print("[WINDOWS] Системная команда выключения не найдена")
+            logger.warning("Системная команда выключения не найдена")
             return False
 
         return self._start_process([shutdown_path, "/s", "/t", "5"])
@@ -90,7 +93,7 @@ class WindowsActions:
     def restartComputer(self) -> bool:
         shutdown_path = shutil.which("shutdown.exe")
         if not shutdown_path:
-            print("[WINDOWS] Системная команда перезагрузки не найдена")
+            logger.warning("Системная команда перезагрузки не найдена")
             return False
 
         return self._start_process([shutdown_path, "/r", "/t", "5"])
@@ -99,7 +102,7 @@ class WindowsActions:
         try:
             return bool(ctypes.windll.user32.LockWorkStation())
         except Exception as error:
-            print(f"[WINDOWS] Не удалось заблокировать компьютер: {error}")
+            logger.exception("Не удалось заблокировать компьютер: %s", error)
             return False
 
     def takeScreenshot(self) -> bool:
@@ -110,10 +113,10 @@ class WindowsActions:
             screenshots_directory.mkdir(parents=True, exist_ok=True)
             filename = datetime.now().strftime("screenshot_%Y-%m-%d_%H-%M-%S.png")
             ImageGrab.grab(all_screens=True).save(screenshots_directory / filename)
-            print(f"[WINDOWS] Скриншот сохранён: {screenshots_directory / filename}")
+            logger.info("Скриншот сохранён: %s", screenshots_directory / filename)
             return True
         except Exception as error:
-            print(f"[WINDOWS] Не удалось сделать скриншот: {error}")
+            logger.exception("Не удалось сделать скриншот: %s", error)
             return False
 
     @staticmethod
@@ -126,7 +129,7 @@ class WindowsActions:
         try:
             normalized_level = int(level)
             if not 0 <= normalized_level <= 100:
-                print("[WINDOWS] Громкость должна быть от 0 до 100")
+                logger.warning("Громкость должна быть от 0 до 100")
                 return False
 
             self._get_endpoint_volume().SetMasterVolumeLevelScalar(
@@ -135,7 +138,7 @@ class WindowsActions:
             )
             return True
         except Exception as error:
-            print(f"[WINDOWS] Не удалось установить громкость: {error}")
+            logger.exception("Не удалось установить громкость: %s", error)
             return False
 
     def muteSound(self) -> bool:
@@ -149,7 +152,7 @@ class WindowsActions:
             self._get_endpoint_volume().SetMute(int(muted), None)
             return True
         except Exception as error:
-            print(f"[WINDOWS] Не удалось изменить состояние звука: {error}")
+            logger.exception("Не удалось изменить состояние звука: %s", error)
             return False
 
     def increaseVolume(self) -> bool:
@@ -166,13 +169,13 @@ class WindowsActions:
             endpoint.SetMasterVolumeLevelScalar(new_level / 100, None)
             return True
         except Exception as error:
-            print(f"[WINDOWS] Не удалось изменить громкость: {error}")
+            logger.exception("Не удалось изменить громкость: %s", error)
             return False
 
     def openApplication(self, app_name: str) -> bool:
         app_path = shutil.which(app_name)
         if not app_path:
-            print(f"[WINDOWS] Приложение не найдено: {app_name}")
+            logger.warning("Приложение не найдено: %s", app_name)
             return False
 
         return self._start_process([app_path])

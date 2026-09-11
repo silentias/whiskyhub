@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "./App.css";
 import Header, { type Tab } from "./components/Header";
-import InDevelop from "./components/InDevelop";
+import Commands from "./components/Commands";
 import Info from "./components/Info";
 import Main from "./components/Main";
 import Settings from "./components/Settings";
@@ -20,7 +20,7 @@ function App() {
       <div className="bg-gray-900 text-white h-[100vh] w-[100vw] flex flex-col items-center">
       <Header activeTab={activeTab} onTabChange={setActiveTab} />
 
-      {activeTab === "development" && <InDevelop />}
+      {activeTab === "commands" && <Commands />}
       {activeTab === "smart-home" && <SmartHome />}
       {activeTab === "main" && (
         <Main

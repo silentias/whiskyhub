@@ -1,6 +1,6 @@
-import { CircleQuestionMark, House, HouseWifi, Info, Settings } from "lucide-react";
+import { House, HouseWifi, Info, ListChecks, Settings } from "lucide-react";
 
-export type Tab = "development" | "smart-home" | "main" | "settings" | "info";
+export type Tab = "commands" | "smart-home" | "main" | "settings" | "info";
 
 type HeaderProps = {
     activeTab: Tab;
@@ -8,7 +8,7 @@ type HeaderProps = {
 };
 
 const buttons = [
-    { id: "development", label: "В разработке", Icon: CircleQuestionMark },
+    { id: "commands", label: "Команды", Icon: ListChecks },
     { id: "smart-home", label: "Умный дом", Icon: HouseWifi },
     { id: "main", label: "Главная", Icon: House },
     { id: "settings", label: "Настройки", Icon: Settings },

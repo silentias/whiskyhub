@@ -1,6 +1,9 @@
 import webbrowser
+import logging
 import shutil
 import subprocess
+
+logger = logging.getLogger(__name__)
 from pathlib import Path
 
 
@@ -11,14 +14,14 @@ class MacActions:
             subprocess.Popen(command)
             return True
         except OSError as error:
-            print(f"[MAC] Не удалось выполнить команду: {error}")
+            logger.exception("Не удалось выполнить команду: %s", error)
             return False
 
     def openBrowser(self, url="https://www.google.com") -> bool:
         try:
             return bool(webbrowser.open(url))
         except webbrowser.Error as error:
-            print(f"[MAC] Не удалось открыть браузер: {error}")
+            logger.exception("Не удалось открыть браузер: %s", error)
             return False
 
     def openCalculator(self) -> bool:
@@ -30,7 +33,7 @@ class MacActions:
     def openFileManager(self) -> bool:
         open_path = shutil.which("open")
         if not open_path:
-            print("[MAC] Системная команда open не найдена")
+            logger.warning("Системная команда open не найдена")
             return False
 
         return self._start_process([open_path, str(Path.home())])
@@ -50,7 +53,7 @@ class MacActions:
     def emptyTrash(self) -> bool:
         osascript_path = shutil.which("osascript")
         if not osascript_path:
-            print("[MAC] Не найдена команда очистки корзины")
+            logger.warning("Не найдена команда очистки корзины")
             return False
 
         return self._start_process(
@@ -64,7 +67,7 @@ class MacActions:
     def shutdownComputer(self) -> bool:
         osascript_path = shutil.which("osascript")
         if not osascript_path:
-            print("[MAC] Системная команда выключения не найдена")
+            logger.warning("Системная команда выключения не найдена")
             return False
 
         return self._start_process(
@@ -78,7 +81,7 @@ class MacActions:
     def restartComputer(self) -> bool:
         osascript_path = shutil.which("osascript")
         if not osascript_path:
-            print("[MAC] Системная команда перезагрузки не найдена")
+            logger.warning("Системная команда перезагрузки не найдена")
             return False
 
         return self._start_process(
@@ -95,7 +98,7 @@ class MacActions:
     def _open_system_app(self, app_name: str) -> bool:
         open_path = shutil.which("open")
         if not open_path:
-            print("[MAC] Системная команда open не найдена")
+            logger.warning("Системная команда open не найдена")
             return False
 
         return self._start_process([open_path, "-a", app_name])

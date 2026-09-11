@@ -9,7 +9,7 @@ function Info() {
                     Локальный голосовой ассистент для управления компьютером
                 </p>
                 <span className="mt-3 inline-block rounded-full bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-400">
-                    pre-alpha v0.0.3
+                    pre-alpha v0.0.4
                 </span>
             </div>
 
