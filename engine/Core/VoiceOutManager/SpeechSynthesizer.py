@@ -1,15 +1,18 @@
+import logging
 import numpy as np
 import sounddevice as sd
 from piper import PiperVoice
 
 from config import Config
 
+logger = logging.getLogger(__name__)
+
 
 class SpeechSynthesizer:
     def __init__(self, model_path):
-        print("[TTS] Загружаю голосовую модель...")
+        logger.info("Загружаю голосовую модель")
         self.voice = PiperVoice.load(str(model_path))
-        print("[TTS] Голосовая модель готова")
+        logger.info("Голосовая модель готова")
 
     def speak(self, text: str):
         if not text.strip():

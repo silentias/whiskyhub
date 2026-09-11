@@ -1,9 +1,12 @@
+import logging
 from threading import Thread
 
 from flask import Flask, request
 from werkzeug.serving import BaseWSGIServer, make_server
 
 from Adapters.Http.HttpHandlers import HttpHandlers
+
+logger = logging.getLogger(__name__)
 
 
 class HttpAdapter:
@@ -55,6 +58,18 @@ class HttpAdapter:
             methods=["GET"],
         )
         self._flask_app.add_url_rule(
+            "/api/logs",
+            "logs",
+            lambda: self._handlers.logs(request.args.get("limit")),
+            methods=["GET"],
+        )
+        self._flask_app.add_url_rule(
+            "/api/commands",
+            "commands",
+            self._handlers.commands,
+            methods=["GET"],
+        )
+        self._flask_app.add_url_rule(
             "/api/microphone",
             "toggle_microphone",
             lambda: self._handlers.toggle_microphone(request.get_json(silent=True)),
@@ -80,7 +95,7 @@ class HttpAdapter:
             daemon=True,
         )
         self._thread.start()
-        print(f"[HTTP] Сервер запущен: http://{self._host}:{self._port}")
+        logger.info("HTTP-сервер запущен: http://%s:%s", self._host, self._port)
 
     def stop(self) -> None:
         if self._server is None:
@@ -92,4 +107,4 @@ class HttpAdapter:
         self._server.server_close()
         self._server = None
         self._thread = None
-        print("[HTTP] Сервер остановлен")
+        logger.info("HTTP-сервер остановлен")

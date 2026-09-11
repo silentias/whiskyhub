@@ -1,4 +1,5 @@
 import json
+import logging
 import queue
 
 import sounddevice as sd
@@ -6,6 +7,8 @@ from vosk import KaldiRecognizer, Model
 
 from config import Config
 from App.RunTime import RunTime
+
+logger = logging.getLogger(__name__)
 
 
 class VoiceListener:
@@ -21,17 +24,17 @@ class VoiceListener:
         self._runtime = runtime or RunTime()
         self._stream = None
 
-        print("[LISTENER] Загружаю модель...")
+        logger.info("Загружаю модель распознавания")
         self._model = Model(str(Config.MODEL_PATH))
         self._recognizer = KaldiRecognizer(
             self._model,
             Config.SAMPLE_RATE,
         )
-        print("[LISTENER] Модель готова")
+        logger.info("Модель распознавания готова")
 
     def _audio_callback(self, indata, frames, time, status) -> None:
         if status:
-            print(f"[LISTENER][WARNING] Состояние микрофона: {status}")
+            logger.warning("Состояние микрофона: %s", status)
 
         if self._runtime.microphone_enabled.is_set():
             self._audio_queue.put(bytes(indata))
@@ -82,7 +85,7 @@ class VoiceListener:
                 self._stream.stop()
             self._stream.close()
         except Exception as error:
-            print(f"[LISTENER] Ошибка при закрытии аудиопотока: {error}")
+            logger.warning("Ошибка при закрытии аудиопотока: %s", error)
         finally:
             self._stream = None
 

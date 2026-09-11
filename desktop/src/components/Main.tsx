@@ -90,7 +90,7 @@ function Main({ isEngineRunning, setIsEngineRunning }: MainProps) {
             </div>
             */}
             <div className="flex flex-col items-center text-gray-400 mt-10 mb-10">
-                pre-alpha v0.0.3 by <a href="https://github.com/silentiasm" target="_blank" rel="noopener noreferrer">
+                pre-alpha v0.0.4 by <a href="https://github.com/silentiasm" target="_blank" rel="noopener noreferrer">
                     silentias
                 </a>
             </div>

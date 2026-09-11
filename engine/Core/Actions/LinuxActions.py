@@ -1,7 +1,10 @@
 import webbrowser
+import logging
 import shutil
 import subprocess
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
 
 
 class LinuxActions:
@@ -11,14 +14,14 @@ class LinuxActions:
             subprocess.Popen(command)
             return True
         except OSError as error:
-            print(f"[LINUX] Не удалось запустить {command[0]}: {error}")
+            logger.exception("Не удалось запустить %s: %s", command[0], error)
             return False
 
     def openBrowser(self, url="https://www.google.com") -> bool:
         try:
             return bool(webbrowser.open(url))
         except webbrowser.Error as error:
-            print(f"[LINUX] Не удалось открыть браузер: {error}")
+            logger.exception("Не удалось открыть браузер: %s", error)
             return False
 
     def openCalculator(self) -> bool:
@@ -35,7 +38,7 @@ class LinuxActions:
             if calculator_path:
                 return self._start_process([calculator_path])
 
-        print("[LINUX] В системе не найден калькулятор")
+        logger.warning("В системе не найден калькулятор")
         return False
 
     def openNotepad(self) -> bool:
@@ -52,13 +55,13 @@ class LinuxActions:
             if editor_path:
                 return self._start_process([editor_path])
 
-        print("[LINUX] В системе не найден текстовый редактор")
+        logger.warning("В системе не найден текстовый редактор")
         return False
 
     def openFileManager(self) -> bool:
         file_manager_path = shutil.which("xdg-open")
         if not file_manager_path:
-            print("[LINUX] В системе не найден файловый менеджер")
+            logger.warning("В системе не найден файловый менеджер")
             return False
 
         return self._start_process([file_manager_path, str(Path.home())])
@@ -77,7 +80,7 @@ class LinuxActions:
             if terminal_path:
                 return self._start_process([terminal_path])
 
-        print("[LINUX] В системе не найден терминал")
+        logger.warning("В системе не найден терминал")
         return False
 
     def openCalendar(self) -> bool:
@@ -103,7 +106,7 @@ class LinuxActions:
             if task_manager_path:
                 return self._start_process([task_manager_path])
 
-        print("[LINUX] В системе не найден диспетчер задач")
+        logger.warning("В системе не найден диспетчер задач")
         return False
 
     def openSettings(self) -> bool:
@@ -119,7 +122,7 @@ class LinuxActions:
             if settings_path:
                 return self._start_process([settings_path])
 
-        print("[LINUX] В системе не найдены системные настройки")
+        logger.warning("В системе не найдены системные настройки")
         return False
 
     def emptyTrash(self) -> bool:
@@ -131,13 +134,13 @@ class LinuxActions:
         if trash_empty_path:
             return self._start_process([trash_empty_path])
 
-        print("[LINUX] Не найдена команда для очистки корзины")
+        logger.warning("Не найдена команда для очистки корзины")
         return False
 
     def shutdownComputer(self) -> bool:
         systemctl_path = shutil.which("systemctl")
         if not systemctl_path:
-            print("[LINUX] Системная команда выключения не найдена")
+            logger.warning("Системная команда выключения не найдена")
             return False
 
         return self._start_process([systemctl_path, "poweroff"])
@@ -145,7 +148,7 @@ class LinuxActions:
     def restartComputer(self) -> bool:
         systemctl_path = shutil.which("systemctl")
         if not systemctl_path:
-            print("[LINUX] Системная команда перезагрузки не найдена")
+            logger.warning("Системная команда перезагрузки не найдена")
             return False
 
         return self._start_process([systemctl_path, "reboot"])
@@ -153,7 +156,7 @@ class LinuxActions:
     def openApplication(self, app_name: str) -> bool:
         app_path = shutil.which(app_name)
         if not app_path:
-            print(f"[LINUX] Приложение не найдено: {app_name}")
+            logger.warning("Приложение не найдено: %s", app_name)
             return False
 
         return self._start_process([app_path])

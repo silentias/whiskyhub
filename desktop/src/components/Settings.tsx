@@ -1,5 +1,6 @@
 import { Mic } from "lucide-react";
 import { useMicrophone } from "../contexts/MicrophoneContext";
+import LogViewer from "./LogViewer";
 
 function Settings() {
     const {
@@ -12,7 +13,7 @@ function Settings() {
     const isMicrophoneOn = microphoneAvailable && microphoneEnabled;
 
     return (
-        <div className="flex w-full grow flex-col px-8 pb-8 pt-8">
+        <div className="flex w-full grow flex-col overflow-y-auto px-8 pb-8 pt-8">
             <h1 className="text-3xl font-bold">Настройки</h1>
             <p className="mt-2 text-sm text-gray-400">
                 Настройте работу голосового ассистента
@@ -57,6 +58,8 @@ function Settings() {
             {microphoneError && (
                 <p className="mt-2 px-1 text-xs text-red-400">{microphoneError}</p>
             )}
+
+            <LogViewer />
         </div>
     );
 }

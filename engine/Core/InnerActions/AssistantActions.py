@@ -1,7 +1,10 @@
+import logging
 import sqlite3
 
 from App.RunTime import RunTime
 from Core.Storage.DB import DB
+
+logger = logging.getLogger(__name__)
 
 
 class AssistantActions:
@@ -19,7 +22,7 @@ class AssistantActions:
         try:
             self._speech.speak(text)
         except Exception as error:
-            print(f"[TTS] Не удалось озвучить сообщение: {error}")
+            logger.exception("Не удалось озвучить сообщение: %s", error)
 
     def changeAssistantName(self, name: str) -> bool:
         normalized_name = " ".join(name.split()).capitalize()
@@ -52,11 +55,11 @@ class AssistantActions:
                 return False
 
             self.runtime.assistant_name = active_name
-            print(f"[INNER ACTION] Новое имя ассистента: {active_name}")
+            logger.info("Новое имя ассистента: %s", active_name)
             self.speak(f"Теперь меня зовут {active_name}")
             return True
 
         except (sqlite3.Error, ValueError) as error:
-            print(f"[INNER ACTION] Не удалось изменить имя: {error}")
+            logger.exception("Не удалось изменить имя: %s", error)
             self.speak("Не удалось изменить имя")
             return False

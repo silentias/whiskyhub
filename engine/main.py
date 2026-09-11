@@ -1,15 +1,9 @@
 import logging
 import time
 
-from config import USER_DATA_ROOT
+from Core.Logging import configure_logging
 
-USER_DATA_ROOT.mkdir(parents=True, exist_ok=True)
-logging.basicConfig(
-    filename=USER_DATA_ROOT / "engine.log",
-    level=logging.INFO,
-    format="%(asctime)s %(levelname)s %(name)s: %(message)s",
-    encoding="utf-8",
-)
+configure_logging()
 logger = logging.getLogger("whiskyhub")
 
 from App.App import App
@@ -27,7 +21,7 @@ from Adapters.Http.HttpHandlers import HttpHandlers
 
 
 def main():
-    print("[MAIN] Программа запущена")
+    logger.info("Программа запущена")
 
     app = App()
     runtime = RunTime()
@@ -62,7 +56,7 @@ def main():
     http_handlers = HttpHandlers(dispatcher, runtime)
     http_adapter = HttpAdapter(app.flask_app, http_handlers)
     http_adapter.start()
-    print(f"[MAIN] Скажите '{runtime.assistant_name}' для активации")
+    logger.info("Скажите '%s' для активации", runtime.assistant_name)
 
     try:
         while runtime.state_program == "running":
@@ -75,26 +69,24 @@ def main():
                 )
 
                 if result.keep_session_active:
-                    print("[MAIN] Ожидаю продолжение голосовой сессии")
+                    logger.info("Ожидаю продолжение голосовой сессии")
                 else:
-                    print(
-                        f"[MAIN] Скажите '{runtime.assistant_name}' "
-                        "для новой команды"
+                    logger.info(
+                        "Скажите '%s' для новой команды", runtime.assistant_name
                     )
             except Exception as error:
                 logger.exception("Ошибка голосового цикла")
-                print(f"[VOICE][ERROR] {type(error).__name__}: {error}")
                 voice_adapter.complete_session(keep_active=False)
                 listener.recover()
                 time.sleep(1)
 
     except KeyboardInterrupt:
-        print("\n[MAIN] Получен Ctrl+C")
+        logger.info("Получен Ctrl+C")
     finally:
         runtime.state_program = "stopped"
         listener.close()
         http_adapter.stop()
-        print("[MAIN] Программа завершена")
+        logger.info("Программа завершена")
 
 if __name__ == "__main__":
     main()

@@ -1,3 +1,5 @@
+import logging
+from collections import deque
 from dataclasses import asdict
 from typing import Any
 
@@ -6,6 +8,9 @@ from flask import jsonify
 from App.RunTime import RunTime
 from Contracts.CommandRequest import CommandRequest
 from Dispatcher.CentralDispatcher import CentralDispatcher
+from config import Config
+
+logger = logging.getLogger(__name__)
 
 
 class HttpHandlers:
@@ -20,6 +25,30 @@ class HttpHandlers:
 
     def microphone_state(self):
         return jsonify(enabled=self._runtime.microphone_enabled.is_set()), 200
+
+    def commands(self):
+        return jsonify(commands=self._dispatcher.list_commands()), 200
+
+    def logs(self, raw_limit: str | None):
+        try:
+            limit = int(raw_limit or 200)
+        except ValueError:
+            return jsonify(error="Параметр limit должен быть целым числом"), 400
+
+        if not 1 <= limit <= 1000:
+            return jsonify(error="Параметр limit должен быть от 1 до 1000"), 400
+
+        if not Config.LOG_PATH.exists():
+            return jsonify(logs=[]), 200
+
+        try:
+            with Config.LOG_PATH.open("r", encoding="utf-8", errors="replace") as log_file:
+                lines = [line.rstrip("\r\n") for line in deque(log_file, maxlen=limit)]
+        except OSError as error:
+            logger.exception("Не удалось прочитать журнал: %s", error)
+            return jsonify(error="Не удалось прочитать журнал Engine"), 500
+
+        return jsonify(logs=lines), 200
 
     def toggle_microphone(self, payload: Any):
         if not isinstance(payload, dict) or not isinstance(payload.get("enabled"), bool):
